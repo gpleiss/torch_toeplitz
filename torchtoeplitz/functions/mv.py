@@ -13,21 +13,28 @@ class Mv(Function):
         assert type(c) == type(r)
         assert type(c) == type(v)
 
+        orig_size = len(c)
         r_reverse = r.index_select(0, torch.LongTensor(list(range(1, len(r))[::-1])))
-        circ_vector = torch.cat((c, r_reverse), 0)
-        v_aug = torch.cat((v, torch.zeros(len(r) - 1)), 0)
+        c.resize_(orig_size + len(r) - 1)
+        c[orig_size:].copy_(r_reverse)
 
-        fft_circ_vector = fft.fft1(circ_vector)
-        fft_v_aug = fft.fft1(v_aug)
-        fft_product = torch.zeros(fft_circ_vector.size())
+        v.resize_(2 * orig_size - 1)
+        v[orig_size:].fill_(0)
 
-        fft_product[:, 0].addcmul_(fft_circ_vector[:, 0], fft_v_aug[:, 0])
-        fft_product[:, 0].addcmul_(-1, fft_circ_vector[:, 1], fft_v_aug[:, 1])
-        fft_product[:, 1].addcmul_(fft_circ_vector[:, 1], fft_v_aug[:, 0])
-        fft_product[:, 1].addcmul_(fft_circ_vector[:, 0], fft_v_aug[:, 1])
+        fft_c = fft.fft1(c)
+        fft_v = fft.fft1(v)
+        fft_product = torch.zeros(fft_c.size())
 
-        res = fft.ifft1(fft_product, circ_vector.size())
-        res.resize_(len(c))
+        fft_product[:, 0].addcmul_(fft_c[:, 0], fft_v[:, 0])
+        fft_product[:, 0].addcmul_(-1, fft_c[:, 1], fft_v[:, 1])
+        fft_product[:, 1].addcmul_(fft_c[:, 1], fft_v[:, 0])
+        fft_product[:, 1].addcmul_(fft_c[:, 0], fft_v[:, 1])
+
+        res = fft.ifft1(fft_product, c.size())
+        c.resize_(orig_size)
+        r.resize_(orig_size)
+        v.resize_(orig_size)
+        res.resize_(orig_size)
         return res
 
 '''
