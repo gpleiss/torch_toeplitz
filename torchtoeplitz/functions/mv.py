@@ -1,7 +1,6 @@
 import torch
 from torch.autograd import Function
 from .. import fft
-from .. import toeplitz
 from .. import util
 
 class Mv(Function):
