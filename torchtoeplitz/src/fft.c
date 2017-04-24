@@ -21,7 +21,7 @@ int fft1_r2c(THFloatTensor *input, THFloatTensor *output)
   THArgCheck(THFloatTensor_size(output, 2) == 2, 2, "The last dimension of the output tensor should be 2");
 
   // raw pointers
-  double *input_data = THFloatTensor_data(input);
+  float *input_data = THFloatTensor_data(input);
   fftwf_complex *output_data = (fftwf_complex*)THFloatTensor_data(output);
 
   int rank = 1;
@@ -59,7 +59,7 @@ int fft1_c2r(THFloatTensor *input, THFloatTensor *output)
 
   // raw pointers
   fftwf_complex *input_data = (fftwf_complex*)THFloatTensor_data(input);
-  double *output_data = THFloatTensor_data(output);
+  float *output_data = THFloatTensor_data(output);
 
   int rank = 1;
   int stride = 1;
