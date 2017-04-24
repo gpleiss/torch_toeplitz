@@ -37,6 +37,24 @@ def test_fft1_computes_fft_of_nd_input():
     assert torch.norm(res_imag - actual_imag) < 1e-5
 
 
+def test_fft1_works_with_cuda():
+    d = 8
+    input = torch.randn(3, 6, d).cuda()
+
+    res = fft.fft1(input)
+    actual = np.fft.fft(input.cpu().numpy())
+    assert(isinstance(res, torch.cuda.FloatTensor))
+    assert(tuple(res.size()) == (3, 6, 5, 2))
+
+    res_real = res[:, :, :, 0].cpu()
+    res_imag = res[:, :, :, 1].cpu()
+    actual_real = torch.from_numpy(actual.real[:, :, :5]).float()
+    actual_imag = torch.from_numpy(actual.imag[:, :, :5]).float()
+
+    assert torch.norm(res_real - actual_real) < 1e-5
+    assert torch.norm(res_imag - actual_imag) < 1e-5
+
+
 def test_fft1_returns_type_of_original_input():
     d = 8
     input = torch.randn(3, 6, d).double()
@@ -73,6 +91,17 @@ def test_ifft1_computes_ifft_of_2d_input():
     recon = fft.ifft1(res)
     assert input.size() == recon.size()
     assert torch.norm(input - recon) < 1e-5
+
+
+def test_ifft1_works_with_cuda():
+    d = 9
+    input = torch.randn(d)
+
+    res = fft.fft1(input)
+    recon = fft.ifft1(res.cuda(), input.cuda().size())
+    assert(isinstance(recon, torch.cuda.FloatTensor))
+    assert input.size() == recon.size()
+    assert torch.norm(input.cuda() - recon) < 1e-5
 
 
 def test_ifft1_returns_type_of_original_input():
