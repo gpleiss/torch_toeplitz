@@ -1,4 +1,5 @@
 import torch
+from torch.autograd import Variable
 
 '''
     Constructs tensor version of toeplitz matrix from column vector
@@ -60,3 +61,19 @@ def reverse(input, dim=0):
 def rcumsum(input, dim=0):
     reverse_index = torch.LongTensor(list(range(input.size(dim))[::-1]))
     return torch.index_select(input, dim, reverse_index).cumsum(dim).index_select(dim, reverse_index)
+
+
+'''
+    Determines if two tensors are approximately equal
+    Args:
+        - self: tensor
+        - other: tensor
+    Returns:
+        - bool
+'''
+def approx_equal(self, other, epsilon=1e-5):
+    if isinstance(self, Variable):
+        self = self.data
+    if isinstance(other, Variable):
+        other = other.data
+    return torch.max((self - other).abs()) <= epsilon

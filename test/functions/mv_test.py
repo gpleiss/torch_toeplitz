@@ -5,14 +5,6 @@ from torchtoeplitz import util
 from torch.autograd import Variable
 
 
-def approx_equal(self, other, epsilon=1e-5):
-    if isinstance(self, Variable):
-        self = self.data
-    if isinstance(other, Variable):
-        other = other.data
-    return torch.max((self - other).abs()) <= epsilon
-
-
 def test_mv_performs_toeplitz_matrix_vector_multiplication():
     c = Variable(torch.randn(5))
     r = Variable(torch.randn(5))
@@ -23,7 +15,7 @@ def test_mv_performs_toeplitz_matrix_vector_multiplication():
     actual = torch.mv(m, v)
 
     res = toeplitz.functions.mv(c, r, v)
-    assert approx_equal(actual, res)
+    assert util.approx_equal(actual, res)
 
 
 def test_sym_mv_performs_toeplitz_matrix_vector_multiplication():
@@ -34,7 +26,7 @@ def test_sym_mv_performs_toeplitz_matrix_vector_multiplication():
     actual = torch.mv(m, v)
 
     res = toeplitz.functions.sym_mv(c, v)
-    assert approx_equal(actual, res)
+    assert util.approx_equal(actual, res)
 
 def test_mv_backwards_performs_toeplitz_matrix_vector_multiplication():
     c = Variable(torch.randn(5), requires_grad=True)
@@ -53,6 +45,6 @@ def test_mv_backwards_performs_toeplitz_matrix_vector_multiplication():
 
     res = toeplitz.functions.mv(c, r, v).sum()
     res.backward()
-    assert approx_equal(v.grad.data, actual_v_grad)
-    assert approx_equal(r.grad.data, actual_cr_grad)
-    assert approx_equal(c.grad.data, actual_cr_grad)
+    assert util.approx_equal(v.grad.data, actual_v_grad)
+    assert util.approx_equal(r.grad.data, actual_cr_grad)
+    assert util.approx_equal(c.grad.data, actual_cr_grad)
