@@ -71,7 +71,7 @@ def rcumsum(input, dim=0):
     Returns:
         - bool
 '''
-def approx_equal(self, other, epsilon=1e-5):
+def approx_equal(self, other, epsilon=1e-4):
     if isinstance(self, Variable):
         self = self.data
     if isinstance(other, Variable):

@@ -37,7 +37,7 @@ def mv(c, r, v):
     return res
 
 
-def sym_minvv(c, v, eps=1e-10):
+def sym_minvv(c, v, eps=1e-20):
     assert c.ndimension() == 1
     assert v.ndimension() == 1
     assert len(c) == len(v)
