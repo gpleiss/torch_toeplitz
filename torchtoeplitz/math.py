@@ -35,3 +35,42 @@ def mv(c, r, v):
     v.resize_(orig_size)
     res.resize_(orig_size)
     return res
+
+
+def sym_minvv(c, v, eps=1e-10):
+    assert c.ndimension() == 1
+    assert v.ndimension() == 1
+    assert len(c) == len(v)
+    assert type(c) == type(v)
+
+    # Initialize variables of conjugate gradients algorithm
+    x = v.clone().fill_(0) # x_0 = 0
+    r = v.clone() #r_0 = v - mat * x_0
+    p = r.clone() # p_0 = r_0
+
+    # Store products
+    curr_r_inner = torch.dot(r, r) # r_i^T r_i
+    next_r_inner = None
+
+    for i in range(100):
+        # Store products
+        mat_p = mv(c, c, p) # mat * p_i
+
+        alpha = curr_r_inner / (torch.dot(p, mat_p)) # alpha_i = r_i^T r_i / (p_i^T mat p_i)
+        x.add_(alpha, p) # x_i+1 = x_i + alpha_i * p
+        r.add_(-alpha, mat_p) # r_i - alpha_i mat p_i
+
+        # Exit condition
+        print(r.norm() / len(r))
+        if r.norm() / len(r) <= eps:
+            break
+
+        next_r_inner = torch.dot(r, r)
+        beta = next_r_inner / (curr_r_inner) # beta_i = (r_i+1^T r_i+1) / (r_i^T r_i)
+        p.mul_(beta)
+        p.add_(r) # p_i+1 = r_i+1 + beta_i p_i
+
+        curr_r_inner = next_r_inner
+        next_r_inner = None
+
+    return x
