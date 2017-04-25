@@ -14,7 +14,4 @@ def test_sym_minvv_performs_symmetric_toeplitz_matrix_inverse_vector_multiplicat
     actual = torch.mv(m_inv, v)
 
     res = toeplitz.functions.sym_minvv(c, v)
-    print(actual)
-    print(res)
     assert util.approx_equal(actual, res)
-    assert False

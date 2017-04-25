@@ -61,7 +61,6 @@ def sym_minvv(c, v, eps=1e-10):
         r.add_(-alpha, mat_p) # r_i - alpha_i mat p_i
 
         # Exit condition
-        print(r.norm() / len(r))
         if r.norm() / len(r) <= eps:
             break
 
