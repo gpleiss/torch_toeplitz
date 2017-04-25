@@ -61,7 +61,7 @@ def sym_minvv(c, v, eps=1e-20):
         r.add_(-alpha, mat_p) # r_i - alpha_i mat p_i
 
         # Exit condition
-        if r.norm() / len(r) <= eps:
+        if r.max() <= eps and r.min() >= -eps:
             break
 
         next_r_inner = torch.dot(r, r)
